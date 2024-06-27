@@ -19,8 +19,8 @@ print("running on", device)
 
 model_id = "stabilityai/stable-diffusion-2-1-base"
 text2ImgPipeline = StableDiffusionPipeline.from_pretrained(model_id).to(device)
-img2ImgPipeline = StableDiffusionImg2ImgPipeline.from_pretrained(model_id).to(device)
-inpaintPipeline = StableDiffusionInpaintPipeline.from_pretrained(model_id).to(device)
+img2ImgPipeline = StableDiffusionImg2ImgPipeline.from_pipe(text2ImgPipeline).to(device)
+inpaintPipeline = StableDiffusionInpaintPipeline.from_pipe(text2ImgPipeline).to(device)
 
 def randomImage():
     return text2image(seed=0)
