@@ -3,6 +3,9 @@ from PIL import Image
 import imageio
 import numpy as np
 from datetime import datetime
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
 from diffusers import (
     StableDiffusionPipeline,
     StableDiffusionImg2ImgPipeline,
@@ -330,3 +333,17 @@ def latents_to_rgb(latents):
     image_array = image_array.transpose(1, 2, 0)
 
     return Image.fromarray(image_array)
+
+def plot_two_images(img1, img2):
+    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+    for ax, img in zip(axes, [img1, img2]):
+        ax.imshow(img)
+        ax.axis('off')
+    plt.show()
+
+def encode_image(image):
+    image_bytes_io = BytesIO()
+    image.save(image_bytes_io, format='PNG')
+    formatted_image_bytes = image_bytes_io.getvalue()
+    encoded = str(base64.b64encode(formatted_image_bytes), 'utf-8')
+    return "data:image/png;base64,"+encoded
