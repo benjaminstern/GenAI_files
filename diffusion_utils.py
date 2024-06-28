@@ -22,8 +22,8 @@ text2ImgPipeline = StableDiffusionPipeline.from_pretrained(model_id).to(device)
 img2ImgPipeline = StableDiffusionImg2ImgPipeline.from_pipe(text2ImgPipeline).to(device)
 inpaintPipeline = StableDiffusionInpaintPipeline.from_pipe(text2ImgPipeline).to(device)
 
-def randomImage():
-    return text2image(seed=0)
+def randomImage(num_inference_steps=20):
+    return text2image(num_inference_steps=num_inference_steps, seed=0)
 
 def text2image(prompt="",
                negative_prompt="Oversaturated, blurry, low quality",
@@ -209,7 +209,8 @@ def text2image_prompt_interpolation(prompt1, prompt2,
     return generated_image, gif_path
 
 def image2image(prompt,
-               image_path,
+               image_path="",
+               image=None,
                strength=0.4,
                negative_prompt="Oversaturated, blurry, low quality",
                height=480, width=640,
@@ -227,8 +228,8 @@ def image2image(prompt,
 
         return callback_kwargs
     
-
-    image = Image.open(image_path)
+    if image is None:
+        image = Image.open(image_path)
     image.thumbnail((512, 512))
 
     generated_image = img2ImgPipeline(
@@ -253,7 +254,8 @@ def image2image(prompt,
     return generated_image
 
 def inpaint(prompt,
-            image_path,
+            image_path="",
+            init_image=None,
             mask_path="",
             mask_image=None,
             negative_prompt="Oversaturated, blurry, low quality",
@@ -272,7 +274,11 @@ def inpaint(prompt,
 
         return callback_kwargs
 
-    init_image = Image.open(image_path).resize((512, 512))
+    if init_image is None:
+        init_image = Image.open(image_path).resize((512, 512))
+    else:
+        init_image = init_image.resize((512,512))
+
     if mask_image is None:
         mask_image = Image.open(mask_path).resize((512, 512))
     else:
